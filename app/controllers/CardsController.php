@@ -10,7 +10,21 @@ class CardsController extends \BaseController {
 	 */
 	public function index()
 	{
-		//
+		$user=User::find(ResourceServer::getOwnerId());
+		$cards=$user->cards()->get();
+		
+		if(Input::has('filter')){
+			$filter=Input::get('filter');
+		}
+		foreach($cards as $card){
+			$card['originalImage']=$card->originalImage->thumbnail()->first();
+			$card['croppedImage']=$card->croppedImage->thumbnail()->first();
+			$card['cardSetting']=$card->cardSetting()->first();
+			$card['frontDrawing']=$card->frontDrawing()->first();
+			$card['backDrawing']=$card->backDrawing()->first();
+			$card['recipients']=$card->addresses()->get();
+		}
+		return $cards;
 	}
 
 	/**

@@ -132,6 +132,7 @@ return array(
 		'Aloha\Twilio\TwilioServiceProvider',
 		'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
 		'Laravel\Cashier\CashierServiceProvider',
+		'Jenssegers\Agent\AgentServiceProvider',
 	),
 
 	/*
@@ -203,7 +204,8 @@ return array(
 		'Rss' 				=> 'Thujohn\Rss\RssFacade',
 		'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
-		'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
+		'ResourceServer' 	=> 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
+		'Agent'            => 'Jenssegers\Agent\Facades\Agent',
 
 	),
 

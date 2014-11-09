@@ -109,6 +109,7 @@ class CardsImagesController extends \BaseController {
 		$drawing->filename=$filename;
 		$drawing->type=$folder; //frontDrawing or backDrawing
 		$drawing->cards_id=$card->id;
+		$drawing->user_id=$user->id;
 		$drawing->file_path=$filepath;
 		$drawing->url_path=URL::asset('assets/images/'.$folder.'/'.rawurlencode($filename));
 		$drawing->size=$size;
@@ -116,6 +117,8 @@ class CardsImagesController extends \BaseController {
 		$drawing->height=$dimensions[1];
 		$drawing->mimetype=$mimetype;
 		if($drawing->save()){
+			$job_id=Queue::push('JobsController@thumbnail', array('id' => $drawing->id));
+			Jobs::create(array('job_id' => $job_id));
 			return Response::json(array('status'=>'success','name'=>$folder,'drawing'=>$drawing));
 		}
 	}

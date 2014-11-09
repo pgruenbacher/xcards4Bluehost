@@ -83,7 +83,10 @@ class JobsController extends \BaseController {
 		//
 	}
 	public function tempUser($data){
-		$user=User::where('email','=',$data['email'])->orwhere('phone_number','=',$data['number'])->first();
+		$user=User::where('email','=',$data['email'])
+		->orwhere('phone_number','=',$data['number'])
+		->where('active','=',0)
+		->first();
 		if(isset($user->id)){
 			return $user;
 		}
@@ -101,18 +104,17 @@ class JobsController extends \BaseController {
 		$ejob = Jobs::where('job_id',$job_id)->first();
 		$ejob->status = 'running';
 		$ejob->save();
-		Log::info('starting');
 		$tempUser=$this->tempUser($data);
 		$sender=User::find($data['user']);
 		$request=new AddressRequests;
-		$request->sender_id=1;
-		$request->responder_id=1;
+		$request->sender_id=$sender->id;
+		$request->responder_id=$tempUser->id;
 		$request->method='text';
 		$request->token=str_random(10);
 		$request->save();
-		Log::info('ending');
-		Twilio::message($tempUser->phone_number, 'Pink Elephants and Happy Rainbows');
-		
+		$message='paulgruenbacher.com/xcards2/addressRequest/'.$request->token;
+		$twilio=Twilio::message($tempUser->phone_number,$message);
+		Log::info($twilio);
 		if(true){
 			$ejob->status = 'finished';
     		$ejob->save();

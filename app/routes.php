@@ -29,7 +29,11 @@ Route::get('trial',function(){
 }); 
 Route::get('addressRequest/{token}',array(
 	'as'=>'addressRequest',
-	'uses'=>'RequestController@form'
+	'uses'=>'RequestsController@create'
+));
+Route::post('requests/{id}',array(
+	'as'=>'addressRequestPost',
+	'uses'=>'RequestsController@update'
 ));
 /*****End Queues ******/
 Route::get('activate',array(

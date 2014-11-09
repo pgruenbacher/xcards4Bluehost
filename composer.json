@@ -20,6 +20,7 @@
 		"aloha/twilio": "dev-master",
 		"guzzlehttp/guzzle": "~4.0",
 		"iron-io/iron_mq":"1.5.2",
+		"jenssegers/agent": "dev-master"
 	},
 	"require-dev": {
 		"way/generators": "2.*",

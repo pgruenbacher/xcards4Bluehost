@@ -38,8 +38,8 @@ class AddressesController extends \BaseController {
 		array(
 		'name'=>'required',
 		'address'=> 'required',
-		'email'=> 'email',
-		'number'=>'numeric',
+		'email'=> 'sometimes|email',
+		'number'=>'sometimes|numeric',
 		'cityName'=>'required',
 		'zipCode'=>'required',
 		'deliveryLine1'=>'required',
