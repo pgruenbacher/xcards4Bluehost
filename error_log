@@ -1,0 +1,1 @@
+[02-Nov-2014 20:03:08 EST] PHP Fatal error:  Cannot redeclare class CreateAddressesCardsTable in /home4/paulgru1/xcards2/app/database/migrations/2014_11_02_200206_create_address_card_table.php on line 37

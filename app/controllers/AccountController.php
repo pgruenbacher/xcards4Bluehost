@@ -80,7 +80,7 @@ class AccountController extends \BaseController {
 				    $message->to($user->email,$user->first)->subject('Welcome!');
 				});
 				return Response::json(array(
-					'status'=>'succes',
+					'status'=>'success',
 					'message'=>'your account has been created. An email has been sent for you to activate'
 				));
 			}else{
@@ -139,6 +139,14 @@ class AccountController extends \BaseController {
 	{
 		//
 	}
+	public function guest(){
+		$user=new User;
+		$user->guest=1;
+		$user->save();
+		$user->roles()->attach(2);
+		$user['roles']=$user->roles()->get();
+		return Response::json(array('user'=>$user));
+	}
 	public function activate(){
 		$code=Input::get('activate');
 		$user = User::where('code','=',$code)->where('active','=','0');
@@ -155,6 +163,25 @@ class AccountController extends \BaseController {
 		}else{
 			return Response::json(array('status'=>'error'));
 		}
+	}
+	public function copyAssets(){
+		$validator=Validator::make(Input::all(),array(
+			'guest'=>'required'
+		));
+		if($validator->fails()){
+			return Response::json(array('status'=>'invalid','message'=>$validator->messages()->toJson()));
+		}
+		$guest=User::find(Input::get('guest'));
+		$user=User::find(ResourceServer::getOwnerId());
+		$cards=$guest->cards()->get();
+		$addresses=$guest->addresses()->get();
+		foreach($cards as $card){
+			Cards::find($card->id)->user()->associate($user)->save();
+		}
+		foreach($addresses as $address){
+			Addresses::find($address->id)->user()->associate($user)->save();
+		}
+		return Response::json(array('status'=>'success','card'=>$card));
 	}
 	public function change(){
 		$validator=Validator::make(Input::all(), array(

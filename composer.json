@@ -18,7 +18,8 @@
 		"lucadegasperi/oauth2-server-laravel": "1.0.x",
 		"barryvdh/laravel-cors": "0.2.x",
 		"aloha/twilio": "dev-master",
-		"guzzlehttp/guzzle": "~4.0"
+		"guzzlehttp/guzzle": "~4.0",
+		"iron-io/iron_mq":"1.5.2",
 	},
 	"require-dev": {
 		"way/generators": "2.*",

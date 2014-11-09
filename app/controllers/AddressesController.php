@@ -39,7 +39,12 @@ class AddressesController extends \BaseController {
 		'name'=>'required',
 		'address'=> 'required',
 		'email'=> 'email',
-		'number'=>'numeric'
+		'number'=>'numeric',
+		'cityName'=>'required',
+		'zipCode'=>'required',
+		'deliveryLine1'=>'required',
+		'lastLine'=>'required',
+		'stateAbbreviation'=>'required'
 		));
 		if($validate->fails()){
 			return Response::json(array(
@@ -49,9 +54,21 @@ class AddressesController extends \BaseController {
 		}else{
 			$address=new Addresses;
 			$address->name=Input::get('name');
-			$address->email=Input::get('email');
 			$address->address=Input::get('address');
-			$address->number=Input::get('number');
+			if(Input::has('number')){
+				$address->number=Input::get('number');
+			}
+			if(Input::has('email')){
+				$address->email=Input::get('email');
+			}
+			$address->city_name=Input::get('cityName');
+			$address->delivery_line_1=Input::get('deliveryLine1');
+			$address->last_line=Input::get('lastLine');
+			$address->state_abbreviation=Input::get('stateAbbreviation');
+			$address->zip_code=Input::get('zipCode');
+			if(Input::has('plus4Code')){
+				$address->plus4_code=Input::get('plus4Code');
+			}
 			if($user->addresses()->save($address)){
 				Return Response::json(array('status'=>'success','message'=>'succesfully saved'));
 			}

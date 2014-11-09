@@ -6,6 +6,9 @@
  Route::filter('angularFilter', function() {
     switch (Request::method()) {
         case 'POST':
+			if(strrpos(Request::header('Content-Type'),'multipart/form-data')!==false){
+				break;
+			}
             $request = Request::instance();
 		    // Now we can get the content from it
 		    $content = $request->getContent();
@@ -56,7 +59,9 @@
 				$ref=$value;
 		    }
 		    $input=$result;
+			//Input::replace($input);
 			Input::replace($input);
+			return $request->replace($input);
 			Log::info('content',array('content'=>$content,'filter'=>$input,'input'=>Input::all()));
             break;
     }

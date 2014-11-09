@@ -131,6 +131,7 @@ return array(
 		'Barryvdh\Cors\CorsServiceProvider',
 		'Aloha\Twilio\TwilioServiceProvider',
 		'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
+		'Laravel\Cashier\CashierServiceProvider',
 	),
 
 	/*

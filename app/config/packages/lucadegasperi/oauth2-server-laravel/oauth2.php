@@ -69,14 +69,13 @@ return array(
         'password' => array(
             'class'            => 'League\OAuth2\Server\Grant\Password',
             'access_token_ttl' => 604800,
-            'callback'         => function ($email, $password) {
-                
+            'callback'         => function ($email, $password) { 
                 $credentials = array(
                     'email' => $email,
                     'password' => $password,
                     'active'=>1
                 );
-				if($password=='verified'){
+				if($password=='social'){
 					$user=User::where('email','=',$email)->where('active','=',1)->first();
 					if(substr($user->password,0,5)=='13@4*'){
 						$user->password='13@4*'+str_random(10);

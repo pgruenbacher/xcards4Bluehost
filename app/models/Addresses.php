@@ -6,4 +6,7 @@ class Addresses extends \Eloquent {
 	public function user(){
 		return $this->belongsTo('User','user_id');
 	}
+	public function card(){
+		return $this->belongsToMany('card');
+	}
 }
