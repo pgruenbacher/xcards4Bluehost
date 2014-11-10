@@ -12,18 +12,30 @@ class CardsController extends \BaseController {
 	{
 		$user=User::find(ResourceServer::getOwnerId());
 		$cards=$user->cards()->get();
-		
 		if(Input::has('filter')){
 			$filter=Input::get('filter');
+		}		
+		$cards=Cards::with('originalImage.thumbnail','croppedImage.thumbnail','cardSetting','frontDrawing.thumbnail','backDrawing.thumbnail','addresses')
+		->where('user_id','=',$user->id)->get();
+		$cards=$cards->toArray();
+		foreach ( $cards as $k=>$v )
+		{
+		  Log::info($k);
+		  $cards[$k] ['originalImage'] = $cards[$k] ['original_image'];
+		  unset($cards[$k]['original_image']);
+		  $cards[$k]['cardSetting'] = $cards[$k]['card_setting'];
+		   unset($cards[$k]['card_setting']);
+		  $cards[$k] ['croppedImage'] = $cards[$k] ['cropped_image'];
+		  unset($cards[$k]['cropped_image']);
+		  $cards[$k] ['frontDrawing'] = $cards[$k] ['front_drawing'];
+		  unset($cards[$k]['front_drawing']);
+		  $cards[$k] ['backDrawing'] = $cards[$k] ['back_drawing'];
+		  unset($cards[$k]['back_drawing']);
+		  $cards[$k] ['recipients'] = $cards[$k] ['addresses'];
+		  unset($cards[$k]['addresses']);
+		  
 		}
-		foreach($cards as $card){
-			$card['originalImage']=$card->originalImage->thumbnail()->first();
-			$card['croppedImage']=$card->croppedImage->thumbnail()->first();
-			$card['cardSetting']=$card->cardSetting()->first();
-			$card['frontDrawing']=$card->frontDrawing()->first();
-			$card['backDrawing']=$card->backDrawing()->first();
-			$card['recipients']=$card->addresses()->get();
-		}
+		
 		return $cards;
 	}
 
@@ -87,14 +99,28 @@ class CardsController extends \BaseController {
 	 */
 	public function show($id)
 	{
-		$card=Cards::find($id);
-		$card['croppedImage']=$card->croppedImage()->first();
-		$card['originalImage']=$card->originalImage()->first();
-		$card['cardSetting']=$card->cardSetting()->first();
-		$card['frontDrawing']=$card->frontDrawing()->first();
-		$card['backDrawing']=$card->backDrawing()->first();
-		$card['recipients']=$card->addresses()->get();
-		if(isset($card->id)){
+		if(Input::has('reuse')){
+			$card=Cards::find($id);
+			$id=$card->reuse();
+			Log::info('reuse');
+		}
+		$card=Cards::with('originalImage.thumbnail','cardSetting','frontDrawing.thumbnail','backDrawing.thumbnail','addresses')
+		->find($id);
+		$card=$card->toArray();
+		   $card['originalImage'] = $card['original_image'];
+		   unset($card['original_image']);
+		   $card['cardSetting'] = $card['card_setting'];
+		   unset($card['card_setting']);
+		   $card['croppedImage'] = $card['cropped_image'];
+		   unset($card['cropped_image']);
+		   $card['frontDrawing'] = $card['front_drawing'];
+		   unset($card['front_drawing']);
+		   $card['backDrawing'] = $card['back_drawing'];
+		   unset($card['back_drawing']);
+		   $card['recipients'] = $card['addresses'];
+		   unset($card['addresses']);
+		  
+		if(isset($card['id'])){
 			return Response::json(array('status'=>'success','card'=>$card));
 		}else{
 			return Response::json(array('status'=>'error'));

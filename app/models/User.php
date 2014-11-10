@@ -16,7 +16,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
 		return $this->hasMany('Addresses')->orderBy('created_at','desc');
 	}
 	public function cards(){
-		return $this->hasMany('Cards')->orderBy('created_at','desc');
+		return $this->hasMany('Cards')->where('original_image','>',0)->orderBy('created_at','desc');
 	}
 	public function roles(){
 		return $this->belongsToMany('Roles');

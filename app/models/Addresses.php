@@ -6,7 +6,13 @@ class Addresses extends \Eloquent {
 	public function user(){
 		return $this->belongsTo('User','user_id');
 	}
-	public function card(){
-		return $this->belongsToMany('card');
+	public function cards(){
+		return $this->belongsToMany('Cards');
 	}
+	protected static function boot(){
+	 	parent::boot();
+		static::deleting(function($address) { // before delete() method call this
+             $address->cards()->detach();
+        });
+	 }
 }

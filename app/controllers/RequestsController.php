@@ -125,7 +125,7 @@ class RequestsController extends \BaseController {
 				$address=$address->toArray();
 				unset($address['id'],$address['updated_at'],$address['deleted_at']);
 				$address['user_id']=$user->id;
-				$address['updated_at']=date('Y-m-d h:m:s');
+				$address['updated_at']=date('Y-m-d H:i:s');
 				$status=Addresses::insert($address);
 			}
 		}

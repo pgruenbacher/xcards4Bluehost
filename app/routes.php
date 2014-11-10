@@ -85,6 +85,9 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 		Route::post('cards/{cardId}/images/{imageId}/message',array(
 			'uses'=>'CardsImagesController@message',
 		));
+		Route::post('cards/{cardId}/addresses',array(
+			'uses'=>'CardsController@addresses',
+		));
 		Route::resource('orders','OrdersController');
 		Route::post('creditOrder',array(
 			'uses'=>'OrdersController@credit'
@@ -93,9 +96,6 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 			'uses'=>'OrdersController@product'
 		));
 		Route::resource('pricings','PricingsController');
-		Route::post('cards/{cardId}/addresses',array(
-			'uses'=>'CardsController@addresses',
-		));
 		Route::resource('addresses','AddressesController');
 		Route::post('imageUpload',array(
 			'uses'=>'ImagesController@upload'

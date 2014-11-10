@@ -103,7 +103,7 @@ class OrdersController extends \BaseController {
 			$order->creditcards_id=$creditcard->id;
 			$order->save();
 			if($order->save()){
-				$card->finished_at=time();
+				$card->finished_at=date('Y-m-d h:m:s');
 				if($card->save()){
 					Mail::send('emails.card_receipt',array('user'=>$user,'card'=>$card,'pricing'=>$pricing,'order'=>$order,'charge'=>$charge), function($message) use($user)
 					{
@@ -187,7 +187,7 @@ class OrdersController extends \BaseController {
 				$order->cards=$number;
 				$order->cards_id=$card->id;
 				if($order->save()){
-					$card->finished_at=time();
+					$card->finished_at=date('Y-m-d H:i:s');
 					if($card->save()){
 						$user->credits=$credits-$creditCost;
 						if($user->save()){

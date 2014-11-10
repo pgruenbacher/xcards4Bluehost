@@ -123,6 +123,10 @@ class CardsImagesController extends \BaseController {
 		}
 	}
 	public function upload($cardId){
+		$card=Cards::find($cardId);
+		if(!isset($card->id)){
+			return Response::json(array('status'=>'invalid'));
+		}
 		$validator = Validator::make(
 		    array('image' => Input::file('image')),
 		    array('image' => array('required', 'max:2000','image'))
@@ -131,7 +135,7 @@ class CardsImagesController extends \BaseController {
 			return Response::json(array('status'=>'invalid'));
 		}
 		$user=User::find(ResourceServer::getOwnerId()); //Logged In User
-		$card=Cards::find($cardId);
+		
 		$file = Input::file('image');
 		// $data=array(
 			// 'user'=>User::find(ResourceServer::getOwnerId()),

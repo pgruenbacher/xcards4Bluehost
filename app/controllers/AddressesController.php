@@ -141,7 +141,8 @@ class AddressesController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+		$address=Addresses::find($id);
+		$address->delete();
+		return Response::json(array('status'=>'sucess'));
 	}
-
 }
