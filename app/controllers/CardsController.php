@@ -33,7 +33,10 @@ class CardsController extends \BaseController {
 		  unset($cards[$k]['back_drawing']);
 		  $cards[$k] ['recipients'] = $cards[$k] ['addresses'];
 		  unset($cards[$k]['addresses']);
-		  
+		  $cards[$k] ['frontMessage'] = $cards[$k] ['front_message'];
+		  unset($cards[$k]['front_message']);
+		  $cards[$k] ['backMessage'] = $cards[$k] ['back_message'];
+		  unset($cards[$k]['back_message']);
 		}
 		
 		return $cards;
@@ -56,6 +59,27 @@ class CardsController extends \BaseController {
 	 *
 	 * @return Response
 	 */
+	public function message($id){
+		$card=Cards::find($id);
+		if(Input::has('front')){
+			if(Input::get('front')==='false'){
+				$card->front_message='';
+			}else{
+				$card->front_message=Input::get('front');
+			}
+		}
+		if(Input::has('back')){
+			if(Input::get('back')==='false'){
+				$card->back_message='';
+			}else{
+				$card->back_message=Input::get('back');
+			}
+		}
+		if($card->save()){
+			return Response::json(array('status'=>'success','card'=>$card,'input'=>Input::all()));
+		}
+		
+	}
 	public function store()
 	{
 		$user=User::find(ResourceServer::getOwnerId());
@@ -104,7 +128,7 @@ class CardsController extends \BaseController {
 			$id=$card->reuse();
 			Log::info('reuse');
 		}
-		$card=Cards::with('originalImage.thumbnail','cardSetting','frontDrawing.thumbnail','backDrawing.thumbnail','addresses')
+		$card=Cards::with('originalImage.thumbnail','croppedImage.thumbnail','cardSetting','frontDrawing.thumbnail','backDrawing.thumbnail','addresses')
 		->find($id);
 		$card=$card->toArray();
 		   $card['originalImage'] = $card['original_image'];
@@ -119,7 +143,11 @@ class CardsController extends \BaseController {
 		   unset($card['back_drawing']);
 		   $card['recipients'] = $card['addresses'];
 		   unset($card['addresses']);
-		  
+		   $card['frontMessage'] = $card['front_message'];
+		   unset($card['front_message']);
+		   $card['backMessage'] = $card['back_message'];
+		   unset($card['back_message']);
+		   
 		if(isset($card['id'])){
 			return Response::json(array('status'=>'success','card'=>$card));
 		}else{
@@ -160,7 +188,9 @@ class CardsController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+		Cards::destroy($id);
+		//$card->delete();
+		return Response::json(array('status'=>'success'));
 	}
 	public function addresses($cardId){
 		$validator=Validator::make(

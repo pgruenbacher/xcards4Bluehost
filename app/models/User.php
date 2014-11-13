@@ -33,6 +33,23 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
 	public function requestResponder(){
 		return $this->hasMany('AddressRequests');
 	}
+	public function recoverPassword(){
+		$code=str_random(60);
+		$password=str_random(6);
+		$this->code=$code;
+		$this->password_temp=Hash::make($password);
+		$link=URL::route('retrievePassword',array('code'=>$code));
+		$user=$this;
+		if($this->save()){
+			Mail::send('emails.auth.forgot',array('user'=>$user,'link'=>$link,'password'=>$password), function($message) use($user)
+			{
+				$message->from('info@x-presscards.com', 'paul gruenbacher');
+			    $message->to($user->email,$user->name)->subject('Forgot Password');
+			});
+			return true;
+		}
+		return false;
+	}
 	public function assignRole($title)
     {
         $assigned_roles = array();
@@ -51,41 +68,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
         }
         $this->roles()->attach($assigned_roles);
     }
-	public function recoverPassword(){
-	 	$code=str_random(60);
-		$password=str_random(10);
-		$this->code=$code;
-		$this->password_temp=Hash::make($password);
-		if($this->save()){
-			$mandrill=new Mandrill(Config::get('mandrill.api_key'));
-			$html=View::make('emails.auth.forgot')->with(array(
-				'link'=>URL::route('account-recover',$code),
-				'username'=>$this->first,
-				'password'=>$password
-			));
-			$html=$html->render();
-			$message = array(
-		        'html' => $html,
-		        'text' => $html,
-		        'subject' => 'your new password',
-		        'from_email' => 'info@x-presscards.com',
-		        'from_name' => 'X-Press Cards',
-		        'to' => array(
-		            array(
-		                'email' => $this->email,
-		                'name' => $this->fullName(),
-		                'type' => 'to'
-		            	)
-		        	),
-	    		);
-			$mailed=$mandrill->messages->send($message); 
-		}
-		if($mailed){
-			return true;
-		}else{
-			return false;
-		}
-	 }
 	
 	/**
 	 * The database table used by the model.

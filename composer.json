@@ -20,7 +20,10 @@
 		"aloha/twilio": "dev-master",
 		"guzzlehttp/guzzle": "~4.0",
 		"iron-io/iron_mq":"1.5.2",
-		"jenssegers/agent": "dev-master"
+		"jenssegers/agent": "dev-master",
+		"h4cc/wkhtmltopdf-i386": "0.12.x",
+        "h4cc/wkhtmltoimage-i386": "0.12.x",
+        "barryvdh/laravel-snappy": "0.1.x"
 	},
 	"require-dev": {
 		"way/generators": "2.*",

@@ -156,13 +156,39 @@ class AccountController extends \BaseController {
 			$user->active =1;
 			$user->code ='';
 			if($user->save()){
-				return Redirect::route('home')
-				->with('global','Congratulations your account has been activated, you may now sign in');
+				return Redirect::away('http://dev.x-presscards.com/#/front?action=activated&status=success');
 			}
-			return Response::json(array('status'=>'error'));
+			return Redirect::away('http://dev.x-presscards.com/#/front?action=activated&status=failure');
 		}else{
-			return Response::json(array('status'=>'error'));
+			return Redirect::away('http://dev.x-presscards.com/#/front?action=activated&status=failure');
 		}
+	}
+	public function resetPassword($code){
+		$user=User::where('code','=',$code)->where('password_temp','!=','')->first();
+		if(isset($user->id)){
+			$user->password=$user->password_temp;
+			$user->code='';
+			if($user->save()){
+				return Redirect::away('http://dev.x-presscards.com/#/front?action=reset&status=success');
+			}
+		}
+		return Redirect::away('http://dev.x-presscards.com?action=reset&status=failure');
+	}
+	public function forgotPassword(){
+		$validator=Validator::make(Input::all(),array(
+			'email'=>'required'
+		));
+		if($validator->fails()){
+			return Response::json(array('status'=>'failure','message'=>$validator->messages()->toArray()));
+		}
+		$email=Input::get('email');
+		$user=User::where('email','=',$email)->where('active','=',1)->first();
+		if(isset($user->id)){
+			if($user->recoverPassword()){
+				return Response::json(array('status'=>'success','message'=>'an email has been sent with your reset password'));
+			}
+		}
+		return Response::json(array('status'=>'failure','message'=>'the user with that email could not be found. Have you activated your account?'));
 	}
 	public function copyAssets(){
 		$validator=Validator::make(Input::all(),array(
@@ -181,7 +207,7 @@ class AccountController extends \BaseController {
 		foreach($addresses as $address){
 			Addresses::find($address->id)->user()->associate($user)->save();
 		}
-		return Response::json(array('status'=>'success','card'=>$card));
+		return Response::json(array('status'=>'success','card'=>$cards));
 	}
 	public function change(){
 		$validator=Validator::make(Input::all(), array(

@@ -66,10 +66,10 @@ class Cards extends \Eloquent {
 	public static function boot(){
 	 	parent::boot();
 		static::deleting(function($card) { // before delete() method call this
-             $card->originalImage->delete();
-			 $card->frontDrawingImage->delete();
-			 $card->backDrawing->delete();
-			 $card->croppedimage->delete();
+             $card->originalImage()->delete();
+			 $card->originalImage()->delete();
+			 $card->backDrawing()->delete();
+			 $card->croppedImage()->delete();
 			 $card->addresses()->detach();
         });
 	 }

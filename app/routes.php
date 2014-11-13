@@ -23,13 +23,14 @@ Route::post('queue/receive', function()
 {
     return Queue::marshal();
 });
-Route::get('trial',function(){
-	$request=new AddressRequests;
-	$request->save();
-}); 
+
 Route::get('addressRequest/{token}',array(
 	'as'=>'addressRequest',
 	'uses'=>'RequestsController@create'
+));
+Route::get('resetPassword/{code}',array(
+	'as'=>'retrievePassword',
+	'uses'=>'AccountController@resetPassword'
 ));
 Route::post('requests/{id}',array(
 	'as'=>'addressRequestPost',
@@ -45,12 +46,14 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 	Route::get('oauth/access_token',function(){
 		return AuthorizationServer::performAccessTokenFlow();
 	});
-	
+	Route::post('forgotPassword',array(
+		'uses'=>'AccountController@forgotPassword'
+	));
 	Route::get('check',function(){
 		try{$bool=ResourceServer::isValid();}catch(Exception $e){$bool=false;}
 		if($bool){
-			$user=User::find(ResourceServer::getOwnerId());
-			$user['roles']=$user->roles()->get();
+			$user=User::with('roles')->find(ResourceServer::getOwnerId());
+			//$user['roles']=$user->roles()->get();
 			return Response::json(array('valid'=>$bool,'user'=>$user));
 		}else{
 			$guest=new User;
@@ -76,6 +79,7 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 		Route::post('account/copy',array(
 			'uses'=>'AccountController@copyAssets'
 		));
+		Route::resource('surveys','SurveysController');
 		Route::resource('requests','RequestsController');
 		Route::post('requests/check',array(
 			'uses'=>'RequestsController@check'
@@ -84,6 +88,9 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 		Route::resource('cards','CardsController');
 		Route::post('cards/{cardId}/images/{imageId}/message',array(
 			'uses'=>'CardsImagesController@message',
+		));
+		Route::post('cards/{id}/message',array(
+			'uses'=>'CardsController@message'
 		));
 		Route::post('cards/{cardId}/addresses',array(
 			'uses'=>'CardsController@addresses',

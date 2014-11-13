@@ -78,4 +78,13 @@ class Images extends \Eloquent {
 		$this->mimetype=$mimetype;
 		return $this->save();
 	}
+	public static function boot(){
+	 	parent::boot();
+		static::deleting(function($image) {
+			// if(File::exists($image->file_path)){
+             	// File::delete($image->file_path);
+            // }
+			$image->thumbnail()->delete();
+		});
+	}
 }
