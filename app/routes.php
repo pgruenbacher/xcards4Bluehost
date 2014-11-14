@@ -46,6 +46,9 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 	Route::get('oauth/access_token',function(){
 		return AuthorizationServer::performAccessTokenFlow();
 	});
+	Route::post('contact',array(
+		'uses'=>'SurveysController@contact'
+	));
 	Route::post('forgotPassword',array(
 		'uses'=>'AccountController@forgotPassword'
 	));

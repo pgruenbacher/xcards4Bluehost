@@ -74,7 +74,7 @@ class AccountController extends \BaseController {
 			// $addresses=new Addresses;
 			// $addresses->saveArray($user,$address_data);	
 			if(isset($user->email)){
-				Mail::send('emails.auth.activate',array('user'=>$user,'link'=>$link), function($message) use($user)
+				Mail::queue('emails.auth.activate',array('name'=>$user->name,'link'=>$link), function($message) use($user)
 				{
 					$message->from('info@x-presscards.com', 'paul gruenbacher');
 				    $message->to($user->email,$user->first)->subject('Welcome!');

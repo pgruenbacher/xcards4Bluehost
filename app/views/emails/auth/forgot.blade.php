@@ -11,7 +11,7 @@
     </style>
   </head>
   	<body>
-	  	<p>Hello {{$user->name}},</p></br>
+	  	<p>Hello {{$name}},</p></br>
 		</br>
 		<p>Have you forgotten your password? If so, follow this link and use the temporary password below to login in.</p>
 		<p>Otherwise, you can safely ignore this email</p>

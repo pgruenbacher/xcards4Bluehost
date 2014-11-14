@@ -41,7 +41,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
 		$link=URL::route('retrievePassword',array('code'=>$code));
 		$user=$this;
 		if($this->save()){
-			Mail::send('emails.auth.forgot',array('user'=>$user,'link'=>$link,'password'=>$password), function($message) use($user)
+			Mail::queue('emails.auth.forgot',array('name'=>$user->name,'link'=>$link,'password'=>$password), function($message) use($user)
 			{
 				$message->from('info@x-presscards.com', 'paul gruenbacher');
 			    $message->to($user->email,$user->name)->subject('Forgot Password');

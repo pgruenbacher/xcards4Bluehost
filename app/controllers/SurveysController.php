@@ -23,7 +23,25 @@ class SurveysController extends \BaseController {
 	{
 		//
 	}
-
+	public function contact(){
+		$input=Input::all();
+		$validator=Validator::make($input,
+		array( 
+			'email'=>'required|email',
+			'subject'=>'required',
+			'text'=>'required'
+			)
+		);
+		if($validator->fails()){
+			return Response::json(array('status'=>'invalid','message'=>$validator->messages()->toArray()));
+		}
+		Mail::queue('emails.contact.contact',array('text'=>$input['text']), function($message) use($input)
+		{
+			$message->from($input['email'], 'website guest');
+		    $message->to('info@x-presscards.com')->subject($input['subject']);
+		});
+		Return Response::json(array('status'=>'success'));
+	}
 	/**
 	 * Store a newly created resource in storage.
 	 * POST /surveys

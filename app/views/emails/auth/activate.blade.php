@@ -14,7 +14,7 @@
   	<div id="logo">
     	<a href="{{URL::route('home')}}"></a>
  	</div><!--end logo-->
-  	<p>Hello {{$user->first}}, </p>
+  	<p>Hello {{$name}}, </p>
   	<br><br>
   	<p>Welcome to X-Press Cards! We offer customized cards that you can have sent, simply by ordering from your computer or phone!</p>
 	<p>Please activate your account using the following link.</p>
