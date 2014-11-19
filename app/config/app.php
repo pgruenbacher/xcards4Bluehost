@@ -133,6 +133,7 @@ return array(
 		'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
 		'Laravel\Cashier\CashierServiceProvider',
 		'Jenssegers\Agent\AgentServiceProvider',
+		'Barryvdh\Snappy\ServiceProvider',
 	),
 
 	/*
@@ -200,12 +201,13 @@ return array(
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
 		'Image' 			=> 'Intervention\Image\Facades\Image',
-		'PDF'				=> 'Barryvdh\DomPDF\Facade',
+		//'PDF'				=> 'Barryvdh\DomPDF\Facade',
 		'Rss' 				=> 'Thujohn\Rss\RssFacade',
 		'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
 		'ResourceServer' 	=> 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
 		'Agent'            => 'Jenssegers\Agent\Facades\Agent',
+		'PDF' => 'Barryvdh\Snappy\Facades\SnappyPdf',
 
 	),
 

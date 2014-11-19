@@ -62,6 +62,7 @@ class AccountController extends \BaseController {
 			$user->code=$code;
 			$user->active=0;
 			$user->save();
+			$user->roles()->attach(3);
 			$link=URL::route('activate',array(
 				'activate'=>$code,
 			));
@@ -74,7 +75,7 @@ class AccountController extends \BaseController {
 			// $addresses=new Addresses;
 			// $addresses->saveArray($user,$address_data);	
 			if(isset($user->email)){
-				Mail::queue('emails.auth.activate',array('name'=>$user->name,'link'=>$link), function($message) use($user)
+				Mail::send('emails.auth.activate',array('name'=>$user->name,'link'=>$link), function($message) use($user)
 				{
 					$message->from('info@x-presscards.com', 'paul gruenbacher');
 				    $message->to($user->email,$user->first)->subject('Welcome!');
@@ -156,11 +157,11 @@ class AccountController extends \BaseController {
 			$user->active =1;
 			$user->code ='';
 			if($user->save()){
-				return Redirect::away('http://dev.x-presscards.com/#/front?action=activated&status=success');
+				return Redirect::away('http://dev.x-presscards.com/front?action=activated&status=success');
 			}
-			return Redirect::away('http://dev.x-presscards.com/#/front?action=activated&status=failure');
+			return Redirect::away('http://dev.x-presscards.com/front?action=activated&status=failure');
 		}else{
-			return Redirect::away('http://dev.x-presscards.com/#/front?action=activated&status=failure');
+			return Redirect::away('http://dev.x-presscards.com/front?action=activated&status=failure');
 		}
 	}
 	public function resetPassword($code){
@@ -169,10 +170,10 @@ class AccountController extends \BaseController {
 			$user->password=$user->password_temp;
 			$user->code='';
 			if($user->save()){
-				return Redirect::away('http://dev.x-presscards.com/#/front?action=reset&status=success');
+				return Redirect::away('http://dev.x-presscards.com/front?action=reset&status=success');
 			}
 		}
-		return Redirect::away('http://dev.x-presscards.com?action=reset&status=failure');
+		return Redirect::away('http://dev.x-presscards.com/front?action=reset&status=failure');
 	}
 	public function forgotPassword(){
 		$validator=Validator::make(Input::all(),array(

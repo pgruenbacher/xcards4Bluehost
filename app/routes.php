@@ -10,7 +10,27 @@
 | and give it the Closure to execute when that URI is requested.
 |
 */
-
+Route::get('test',function(){
+	$cards=Cards::with('addresses','croppedImage','frontDrawing','backDrawing')
+	->where('id','=',52)->get();
+	$data=array(
+		'cards'=>$cards
+	);
+	$snappy = App::make('snappy.pdf');
+	//To file
+	$snappy->generateFromHtml('<h1>Bill</h1><p>You owe me money, dude.</p>', '/tmp/bill-123.pdf');
+// 	
+	// return new Response(
+	    // $snappy->getOutputFromHtml($html),
+	    // 200,
+	    // array(
+	        // 'Content-Type'          => 'application/pdf',
+	        // 'Content-Disposition'   => 'attachment; filename="file.pdf"'
+	    // )
+	// );
+	//$pdf = PDF::loadView('pdf/html2pdf', $data);
+	//return $pdf->download('asdfasdfasdf.pdf');
+});
 Route::get('/',array(
 	'as'=>'home', 
 	function()
