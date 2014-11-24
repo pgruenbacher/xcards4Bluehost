@@ -10,9 +10,20 @@ class AccountController extends \BaseController {
 	 */
 	public function index()
 	{
-		//
+		Return View::make('account/login');
 	}
-
+	public function login(){
+		Return View::make('account/login');
+	}
+	public function postLogin(){
+		if(Auth::attempt(array(
+			'email'=>Input::get('email'),
+			'password'=>Input::get('password'),
+			'active'=>1
+		))){
+			return Redirect::to('admin');
+		}
+	}
 	/**
 	 * Show the form for creating a new resource.
 	 * GET /account/create
@@ -78,7 +89,7 @@ class AccountController extends \BaseController {
 				Mail::send('emails.auth.activate',array('name'=>$user->name,'link'=>$link), function($message) use($user)
 				{
 					$message->from('info@x-presscards.com', 'paul gruenbacher');
-				    $message->to($user->email,$user->first)->subject('Welcome!');
+				    $message->to($user->email,$user->name)->subject('Welcome!');
 				});
 				return Response::json(array(
 					'status'=>'success',
@@ -162,6 +173,28 @@ class AccountController extends \BaseController {
 			return Redirect::away('http://dev.x-presscards.com/front?action=activated&status=failure');
 		}else{
 			return Redirect::away('http://dev.x-presscards.com/front?action=activated&status=failure');
+		}
+	}
+	public function find(){
+		if(Input::has('filter')&&Input::has('where')){
+			$where=Input::get('where');
+			$filter=Input::get('filter');
+			$user=User::where($where,'=',$filter)->where('active','=',1)->get()->first();
+			if(! isset($user->id)){
+				return Response::json(array(
+					'status'=>'notfound'
+				));
+			}
+			else{
+				return Response::json(array(
+					'name'=>$user->name,
+					'status'=>'found'
+				));
+			}
+		}else{
+			return Response::json(array(
+				'error'=>'missing parameters filter or where'
+			));
 		}
 	}
 	public function resetPassword($code){

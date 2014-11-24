@@ -14,7 +14,7 @@ return array(
 	 *
 	 * @type string
 	 */
-	'title' => 'Admin',
+	'title' => 'X-Press Cards Admin',
 
 	/**
 	 * The path to your model config directory
@@ -51,7 +51,13 @@ return array(
 	 * 		'Analytics' => array('E-Commerce' => 'page.ecommerce.analytics'),
 	 *	)
 	 */
-	'menu' => array(),
+	'menu' => array(
+		'users',
+		'cards',
+		'addresses',
+		'orders',
+		'posts',
+		),
 
 	/**
 	 * The permission option is the highest-level authentication check that lets you define a closure that should return true if the current user
@@ -61,7 +67,16 @@ return array(
 	 */
 	'permission'=> function()
 	{
-		return Auth::check();
+		if(Auth::check()){
+			Log::info(Auth::user()->roles()->get());
+			foreach(Auth::user()->roles()->get() as $role){
+				Log::info($role);
+				if($role->type==='admin'){
+					return true;
+				}
+			}
+		}
+		return false;
 	},
 
 	/**
@@ -77,28 +92,28 @@ return array(
 	 *
 	 * @type string
 	 */
-	'dashboard_view' => '',
+	'dashboard_view' => 'administrator.dashboard',
 
 	/**
 	 * The menu item that should be used as the default landing page of the administrative section
 	 *
 	 * @type string
 	 */
-	'home_page' => '',
+	'home_page' => 'users',
 
 	/**
 	 * The route to which the user will be taken when they click the "back to site" button
 	 *
 	 * @type string
 	 */
-	'back_to_site_path' => '/',
+	'back_to_site_path' => 'http://x-presscards.com',
 
 	/**
 	 * The login path is the path where Administrator will send the user if they fail a permission check
 	 *
 	 * @type string
 	 */
-	'login_path' => 'user/login',
+	'login_path' => '/login',
 
 	/**
 	 * The logout path is the path where Administrator will send the user when they click the logout link

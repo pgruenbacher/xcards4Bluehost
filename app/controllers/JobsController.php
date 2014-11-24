@@ -112,7 +112,7 @@ class JobsController extends \BaseController {
 		$request->method='text';
 		$request->token=str_random(10);
 		$request->save();
-		$message='paulgruenbacher.com/xcards2/addressRequest/'.$request->token;
+		$message=$sender->name.'would like your address to send a card of gift. Please go to paulgruenbacher.com/xcards2/addressRequest/'.$request->token;
 		$twilio=Twilio::message($tempUser->phone_number,$message);
 		Log::info($twilio);
 		if(true){

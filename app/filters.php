@@ -33,7 +33,6 @@
 		    }
 		    $input=$result;
 			Input::replace($input);
-			Log::info('content',array('content'=>$content,'filter'=>$input,'input'=>Input::all()));
             break;
 		case 'PUT':
             $request = Request::instance();
@@ -62,7 +61,6 @@
 			//Input::replace($input);
 			Input::replace($input);
 			return $request->replace($input);
-			Log::info('content',array('content'=>$content,'filter'=>$input,'input'=>Input::all()));
             break;
     }
 	

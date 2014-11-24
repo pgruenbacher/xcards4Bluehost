@@ -15,6 +15,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
 	public function addresses(){
 		return $this->hasMany('Addresses')->orderBy('created_at','desc');
 	}
+	public function homeAddress(){
+		return $this->hasOne('Addresses')->where('users_home','=',1);
+	}
 	public function cards(){
 		return $this->hasMany('Cards')->where('original_image','>',0)->orderBy('created_at','desc');
 	}
@@ -27,11 +30,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
 	public function creditcards(){
 		return $this->hasMany('Creditcard');
 	}
+	public function incomingTransfers(){
+		return $this->hasMany('Transfers','recipient_id')->orderBy('created_at','desc');
+	}
+	public function outgoingTransfers(){
+		return $this->hasMany('Transfers','sender_id')->orderBy('created_at','desc');
+	}
 	public function requestSender(){
-		return $this->hasMany('AddressRequests');
+		return $this->hasMany('AddressRequests','sender_id');
 	}
 	public function requestResponder(){
-		return $this->hasMany('AddressRequests');
+		return $this->hasMany('AddressRequests','responder_id');
 	}
 	public function recoverPassword(){
 		$code=str_random(60);
@@ -82,5 +91,18 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
 	 * @var array
 	 */
 	protected $hidden = array('password', 'remember_token');
-
+	
+	public static function boot(){
+	 	parent::boot();
+		static::deleting(function($user) { // before delete() method call this
+			 $user->cards()->delete();
+			 $user->addresses()->delete();
+			 $user->roles()->detach();
+			 $user->creditCards()->delete();
+			 $user->incomingTransfers()->delete();
+			 $user->outgoingTransfers()->delete();
+			 $user->requestSender()->delete();
+			 $user->requestResponder()->delete();
+        });
+	 }
 }

@@ -10,7 +10,7 @@ class AddressesController extends \BaseController {
 	 */
 	public function index(){
 		$user=User::find(ResourceServer::getOwnerId());
-		$addresses=$user->addresses()->select('id','name','email','address','number')->take(10)->get()->toArray();
+		$addresses=$user->addresses()->select('id','name','email','address','number')->get()->toArray();
 		return Response::json($addresses);
 	}
 

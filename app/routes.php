@@ -10,15 +10,36 @@
 | and give it the Closure to execute when that URI is requested.
 |
 */
+Route::get('login',array(
+	'as'=>'login',
+	'uses'=>'AccountController@login'
+));
+Route::post('login',array(
+	'before'=>'csrf',
+	'as'=>'post-login',
+	'uses'=>'AccountController@postLogin'
+));
 Route::get('test',function(){
-	$cards=Cards::with('addresses','croppedImage','frontDrawing','backDrawing')
-	->where('id','=',52)->get();
+	
+	
+	if(Auth::check()){
+			return Auth::user();
+			foreach(Auth::user()->roles()->get() as $role){
+				Log::info($role);
+				if($role->type==='admin'){
+					return 'true';
+				}
+			}
+		}
+		return 'false';
+	$cards=Cards::with('addresses','croppedImage','frontDrawing','backDrawing','cardSetting')
+	->where('id','=',128)->get();
 	$data=array(
 		'cards'=>$cards
 	);
-	$snappy = App::make('snappy.pdf');
+	//$snappy = App::make('snappy.pdf');
 	//To file
-	$snappy->generateFromHtml('<h1>Bill</h1><p>You owe me money, dude.</p>', '/tmp/bill-123.pdf');
+	//$snappy->generateFromHtml('<h1>Bill</h1><p>You owe me money, dude.</p>', '/tmp/bill-125.pdf');
 // 	
 	// return new Response(
 	    // $snappy->getOutputFromHtml($html),
@@ -28,8 +49,16 @@ Route::get('test',function(){
 	        // 'Content-Disposition'   => 'attachment; filename="file.pdf"'
 	    // )
 	// );
-	//$pdf = PDF::loadView('pdf/html2pdf', $data);
-	//return $pdf->download('asdfasdfasdf.pdf');
+	//return View::make('pdf/html2pdf')->with($data);
+	$pdf = PDF::loadView('pdf/html2pdf', $data)
+	//->setOption('dpi',100)
+	->setOption('page-width','1368pt')
+	->setOption('page-height','936pt')
+	->setOption('margin-top',0)
+	->setOption('margin-bottom',0)
+	->setOption('margin-left',0)
+	->setOption('margin-right',0);
+	return $pdf->download('asdfasdfasdf.pdf');
 });
 Route::get('/',array(
 	'as'=>'home', 
@@ -43,6 +72,7 @@ Route::post('queue/receive', function()
 {
     return Queue::marshal();
 });
+/*****End Queues ******/
 
 Route::get('addressRequest/{token}',array(
 	'as'=>'addressRequest',
@@ -56,7 +86,7 @@ Route::post('requests/{id}',array(
 	'as'=>'addressRequestPost',
 	'uses'=>'RequestsController@update'
 ));
-/*****End Queues ******/
+
 Route::get('activate',array(
 	'as'=>'activate',
 	'uses'=>'AccountController@activate',
@@ -75,12 +105,13 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 	Route::get('check',function(){
 		try{$bool=ResourceServer::isValid();}catch(Exception $e){$bool=false;}
 		if($bool){
-			$user=User::with('roles')->find(ResourceServer::getOwnerId());
+			$user=User::with('roles','homeAddress','orders','incomingTransfers','outgoingTransfers')->find(ResourceServer::getOwnerId());
 			//$user['roles']=$user->roles()->get();
 			return Response::json(array('valid'=>$bool,'user'=>$user));
 		}else{
 			$guest=new User;
 			$guest->active=1;
+			$guest->guest=1;
 			$guest->email=str_random(10);
 			$password=str_random(10);
 			$guest->password=Hash::make($password);
@@ -102,11 +133,16 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 		Route::post('account/copy',array(
 			'uses'=>'AccountController@copyAssets'
 		));
+		Route::resource('users','UsersController');
+		Route::get('user/find',array(
+			'uses'=>'AccountController@find'
+		));
 		Route::resource('surveys','SurveysController');
 		Route::resource('requests','RequestsController');
 		Route::post('requests/check',array(
 			'uses'=>'RequestsController@check'
 		));
+		Route::resource('transfers','TransfersController');
 		Route::resource('cards.images','CardsImagesController');
 		Route::resource('cards','CardsController');
 		Route::post('cards/{cardId}/images/{imageId}/message',array(

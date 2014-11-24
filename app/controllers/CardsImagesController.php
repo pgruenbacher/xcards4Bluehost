@@ -95,6 +95,8 @@ class CardsImagesController extends \BaseController {
 		$filename=time().$folder.'.png';
 		$filepath=public_path('assets/images/'.$folder.'/'.$filename);
 		$image->save($filepath);
+		$img_data = file_get_contents($filepath);
+		$base64 = base64_encode($img_data);
 		//Save $drawing
 		$drawing=new Images;
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -113,6 +115,7 @@ class CardsImagesController extends \BaseController {
 		$drawing->file_path=$filepath;
 		$drawing->url_path=URL::asset('assets/images/'.$folder.'/'.rawurlencode($filename));
 		$drawing->size=$size;
+		$drawing->data_blob=$base64;
 		$drawing->width=$dimensions[0];
 		$drawing->height=$dimensions[1];
 		$drawing->mimetype=$mimetype;
@@ -175,7 +178,8 @@ class CardsImagesController extends \BaseController {
 			'x'=>'required',
 			'y'=>'required',
 			'w'=>'required',
-			'h'=>'required'
+			'h'=>'required',
+			'orientation'=>'required'
 		));
 		if($validate->fails()){
 			return Response::json(array('status'=>'invalid','error'=>$validate->messages()->toJson()));
@@ -195,6 +199,7 @@ class CardsImagesController extends \BaseController {
 			$cropped=$image->crop($data['x'],$data['y'],$data['w'],$data['h'],$user->id);
 			if(isset($cropped->id)){
 				$card->cropped_image=$cropped->id;
+				$card->orientation=Input::get('orientation');
 				$card->save();
 				$job_id=Queue::push('JobsController@thumbnail', array('id' => $cropped->id));
 				Jobs::create(array('job_id' => $job_id));
