@@ -10,7 +10,7 @@ class AccountController extends \BaseController {
 	 */
 	public function index()
 	{
-		Return View::make('account/login');
+		
 	}
 	public function login(){
 		Return View::make('account/login');
@@ -22,6 +22,8 @@ class AccountController extends \BaseController {
 			'active'=>1
 		))){
 			return Redirect::to('admin');
+		}else{
+			return 'not admin';
 		}
 	}
 	/**
@@ -139,7 +141,20 @@ class AccountController extends \BaseController {
 	{
 		//
 	}
-
+	public function shared(){
+		$user=User::find(ResourceServer::getOwnerId());
+		$shared=Input::get('shared');
+		if($user->shared){
+			return Response::json(array('status'=>'already shared'));
+		}
+		if($shared){
+			$user->shared=1;
+			$user->credits=$user->credits+1;
+			$user->save();
+			return Response::json(array('status'=>'shared','credits'=>$user->credits));
+		}
+		return Response::json(array('status'=>'not shared'));
+	}
 	/**
 	 * Remove the specified resource from storage.
 	 * DELETE /account/{id}

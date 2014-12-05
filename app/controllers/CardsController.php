@@ -62,6 +62,9 @@ class CardsController extends \BaseController {
 	public function message($id){
 		$card=Cards::find($id);
 		if(Input::has('front')){
+			if(Input::has('alignment')){
+				$card->alignment=Input::get('alignment');
+			}
 			if(Input::get('front')==='false'){
 				$card->front_message='';
 			}else{
@@ -99,6 +102,7 @@ class CardsController extends \BaseController {
 			$card=new Cards;
 			$card->cardsetting_id=Input::get('settingId');
 			$saved=$user->cards()->save($card);
+			$card=Cards::with('cardsetting')->find($card->id);
 			if($saved){
 				return Response::json(array(
 					'status'=>'succes',

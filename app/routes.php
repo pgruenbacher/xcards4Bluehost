@@ -20,8 +20,6 @@ Route::post('login',array(
 	'uses'=>'AccountController@postLogin'
 ));
 Route::get('test',function(){
-	
-	
 	if(Auth::check()){
 			return Auth::user();
 			foreach(Auth::user()->roles()->get() as $role){
@@ -136,6 +134,9 @@ Route::group(array('before'=>'angularFilter','prefix'=>'api'),function(){
 		Route::resource('users','UsersController');
 		Route::get('user/find',array(
 			'uses'=>'AccountController@find'
+		));
+		Route::get('shared',array(
+			'uses'=>'AccountController@shared'
 		));
 		Route::resource('surveys','SurveysController');
 		Route::resource('requests','RequestsController');

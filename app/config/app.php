@@ -134,6 +134,7 @@ return array(
 		'Laravel\Cashier\CashierServiceProvider',
 		'Jenssegers\Agent\AgentServiceProvider',
 		'Barryvdh\Snappy\ServiceProvider',
+		'SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider',
 	),
 
 	/*
@@ -208,6 +209,7 @@ return array(
 		'ResourceServer' 	=> 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
 		'Agent'            => 'Jenssegers\Agent\Facades\Agent',
 		'PDF' => 'Barryvdh\Snappy\Facades\SnappyPdf',
+		'Facebook' => 'SammyK\LaravelFacebookSdk\FacebookFacade',
 
 	),
 

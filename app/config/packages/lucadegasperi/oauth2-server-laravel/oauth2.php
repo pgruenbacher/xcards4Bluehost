@@ -75,26 +75,65 @@ return array(
                     'password' => $password,
                     'active'=>1
                 );
-				if($password=='social'){
-					$user=User::where('email','=',$email)->where('active','=',1)->first();
-					if(substr($user->password,0,5)=='13@4*'){
-						$user->password='13@4*'+str_random(10);
-						$user->save();
-					}
-					Auth::login($user,true);
-					if(Auth::check()){
-						$valid=true;
-					}else{
-						$valid-false;
+				$valid=false;
+				Log::info(is_numeric($email));
+				if(is_numeric($email)){
+					//Initiate facebook Login
+					Facebook::setAccessToken($password);
+					$fbUser=Facebook::object('me')->fields('id','email','first_name','last_name')->get();
+					Log::info($fbUser);
+					if(isset($fbUser['id'])){
+						Log::info('passsed');
+						$facebook_id=$fbUser['id'];
+						$email=isset($fbUser['email'])?$fbUser['email']:str_random(8);
+						if(isset($fbUser['email'])){
+							$user=User::where('email','=',$email)->where('active','=',1)->first();
+						}else{
+							$user=User::where('facebook_id','=',$facebook_id)->where('active','=',1)->first();
+						}
+						if(isset($user->id)){
+							Log::info('existing user');
+							$user->facebook_id=$facebook_id;
+							$user->facebook_token=$password; //password is facebook token
+						}else{
+							Log::info('new facebook user');
+							$user=new User;
+							$user->email=$email;
+							$user->facebook_id=$facebook_id;
+							$user->facebook_token=$password;
+							$user->active=1;
+							$user->name=$fbUser['first_name'].' '.$fbUser['last_name'];
+							$user->guest=0;
+							$password=str_random(8);
+							$user->password=Hash::make($password);
+							$user->save();
+							$user->assignRole('customer');
+							if(isset($fbUser['email'])){
+								$job_id=Queue::push('JobsController@sendSocialEmail', array(
+									'name' => $user->name,
+									'password'=>$password,
+									'email'=>$user->email								
+								));
+								Jobs::create(array('job_id' => $job_id));
+							}
+						}
+						if($user->save()){
+							Auth::login($user);
+							$valid=Auth::check();
+							Log::info($valid);
+							$credentials=array('id'=>$user->id);
+						}
 					}
 				}else{
+					Log::info('attempt',$credentials);
 					$valid = Auth::attempt($credentials);
 				}
+				
 
                 if (!$valid) {
+                	Log::info('!valid');
                     return false;
                 }
-				Log::info(array('status'=>Auth::check()));
                 return Auth::getProvider()->retrieveByCredentials($credentials)->id;
             }
         ),

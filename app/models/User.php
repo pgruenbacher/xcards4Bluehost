@@ -72,6 +72,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface, Billa
             case 'guest':
                 $assigned_roles[] = 2;
                 break;
+			case 'customer':
+				$assigned_roles[]= 3;
+				break;
             default:
                 throw new \Exception("The role entered does not exist");
         }

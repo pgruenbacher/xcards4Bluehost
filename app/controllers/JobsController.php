@@ -125,6 +125,20 @@ class JobsController extends \BaseController {
 			return false;
 		}
 	}
+	public function sendSocialEmail($job,$data){
+		$job_id = $job->getJobId();
+		$ejob = Jobs::where('job_id',$job_id)->first();
+		$ejob->status = 'running';
+		$ejob->save();
+		Mail::send('emails.auth.social',array('name'=>$data['name'],'password'=>$data['password']), function($message) use($data)
+		{
+			$message->from('info@x-presscards.com', 'paul gruenbacher');
+		    $message->to($data['email'],$data['name'])->subject('Welcome!');
+		});
+		$ejob->status = 'finished';
+		$ejob->save();
+		return true;
+	}
 	public function sendRequestEmail($job,$data){
 		$job_id = $job->getJobId();
 		$ejob = Jobs::where('job_id',$job_id)->first();
